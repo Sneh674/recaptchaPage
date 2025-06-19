@@ -6,11 +6,41 @@
     <script src="https://www.google.com/recaptcha/api.js" async defer></script>
     <script>
       function onData(token) {
-        window.ReactNativeWebView.postMessage(token);
+        window.ReactNativeWebView.postMessage(JSON.stringify({ type: 'verify', token }));
       }
+
+      // Optional: monitor height change
+      function resizeObserver() {
+        const iframe = document.querySelector('iframe');
+        if (!iframe) return;
+
+        const observer = new ResizeObserver(() => {
+          const height = iframe.clientHeight;
+          window.ReactNativeWebView.postMessage(JSON.stringify({ type: 'resize', height }));
+        });
+
+        observer.observe(iframe);
+      }
+
+      window.onload = resizeObserver;
     </script>
+    <style>
+      body, html {
+        margin: 0;
+        padding: 0;
+        background: transparent;
+        height: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+    </style>
   </head>
-  <body style="margin:0; padding:0; display:flex; justify-content:center; align-items:center; height:100vh;">
-    <div class="g-recaptcha" data-sitekey="6LeLHWYrAAAAAJoW2PzHW6kCcm4nwduw4WhLW4GK" data-callback="onData"></div>
+  <body>
+    <div
+      class="g-recaptcha"
+      data-sitekey="YOUR_SITE_KEY"
+      data-callback="onData">
+    </div>
   </body>
 </html>
